@@ -1,0 +1,157 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Timestamp = int;
+type ExternalBlob = blob;
+type ExpiryAlert = 
+ record {
+   batchId: BatchId;
+   batchNumber: text;
+   dismissed: bool;
+   drugId: DrugId;
+   drugName: text;
+   expiryDate: Timestamp;
+   quantity: nat;
+ };
+type DrugWithBatches = 
+ record {
+   batches: vec Batch;
+   drug: Drug;
+ };
+type DrugInput = 
+ record {
+   description: text;
+   manufacturer: text;
+   name: text;
+   salePrice: float64;
+ };
+type DrugId = nat;
+type Drug = 
+ record {
+   createdAt: Timestamp;
+   description: text;
+   id: DrugId;
+   manufacturer: text;
+   name: text;
+   salePrice: float64;
+   updatedAt: Timestamp;
+ };
+type DispenseInput = 
+ record {
+   batchId: BatchId;
+   quantity: nat;
+ };
+type DashboardStats = 
+ record {
+   expiringSoonCount: nat;
+   lowStockBatchCount: nat;
+   totalBatches: nat;
+   totalDrugs: nat;
+ };
+type BillInput = 
+ record {
+   filename: text;
+   image: ExternalBlob;
+   note: text;
+ };
+type BillId = nat;
+type Bill = 
+ record {
+   extractedText: opt text;
+   filename: text;
+   id: BillId;
+   image: ExternalBlob;
+   note: text;
+   uploadedAt: Timestamp;
+ };
+type BatchInput = 
+ record {
+   batchNumber: text;
+   drugId: DrugId;
+   expiryDate: Timestamp;
+   manufacturedDate: opt Timestamp;
+   purchasePrice: float64;
+   quantity: nat;
+ };
+type BatchId = nat;
+type Batch = 
+ record {
+   batchNumber: text;
+   createdAt: Timestamp;
+   drugId: DrugId;
+   expiryDate: Timestamp;
+   id: BatchId;
+   manufacturedDate: opt Timestamp;
+   purchasePrice: float64;
+   quantity: nat;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addBatch: (input: BatchInput) -> (Batch);
+  addDrug: (input: DrugInput) -> (Drug);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  deleteBatch: (batchId: BatchId) -> ();
+  deleteBill: (id: BillId) -> ();
+  deleteDrug: (id: DrugId) -> ();
+  dismissAlert: (batchId: BatchId) -> ();
+  dispenseDrug: (input: DispenseInput) -> ();
+  extractBillText: (billId: BillId) -> (text);
+  getCallerUserRole: () -> (UserRole) query;
+  getDashboardStats: () -> (DashboardStats) query;
+  getDrug: (id: DrugId) -> (opt DrugWithBatches) query;
+  getExpiryAlerts: (withinDays: nat) -> (vec ExpiryAlert) query;
+  isCallerAdmin: () -> (bool) query;
+  listBills: () -> (vec Bill) query;
+  listDrugs: (search: opt text) -> (vec DrugWithBatches) query;
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateBatch: (batchId: BatchId, input: BatchInput) -> (Batch);
+  updateDrug: (id: DrugId, input: DrugInput) -> (Drug);
+  uploadBill: (input: BillInput) -> (Bill);
+}

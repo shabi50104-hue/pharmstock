@@ -1,0 +1,21 @@
+{
+  "overview": "A mobile-first pharmacy drug stock management app with bill photo upload, automatic data extraction, inventory tracking, and expiry alerts.",
+  "features": [
+    "Upload purchase bill images and extract drug data automatically",
+    "Manage drug inventory with batch tracking and expiry dates",
+    "Dashboard with expiry alerts and stock summary",
+    "Color-coded expiry warnings (yellow/red)",
+    "Search and filter drug inventory",
+    "Mobile-optimized bottom tab navigation"
+  ],
+  "category": "productivity",
+  "tags": [
+    "pharmacy",
+    "inventory",
+    "stock-management",
+    "expiry-alerts",
+    "bill-upload",
+    "mobile"
+  ],
+  "last_updated": "2026-04-09T07:14:08.323Z"
+}
